@@ -1,5 +1,6 @@
 ﻿using MyShop.Core.Contracts;
 using MyShop.Core.Modals;
+using MyShop.Core.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Web;
 
 namespace MyShop.Services
 {
-    public class BasketService
+    public class BasketService : IBasketService
     {
         IRepository<Product> productContext;
         IRepository<Basket> basketContext;
@@ -105,6 +106,54 @@ namespace MyShop.Services
 
         }
 
+        public List<BastetItemViewModel> GetBasketItems(HttpContextBase httpContext)
+        {
+            Basket basket = GetBasket(httpContext, false);
+
+            if(basket != null)
+            {
+                var result = (from b in basket.BasketItems
+                              join p in productContext.Collection() on b.ProductId equals p.Id
+                              select new BastetItemViewModel()
+                              {
+                                  Id = b.Id,
+                                  Quanity = b.Quanity,
+                                  ProductName = p.Name,
+                                  Price = p.Price,
+                                  Image = p.Image
+                              }).ToList();
+                return result;
+            }
+            else
+            {
+                return new List<BastetItemViewModel>();
+            }
+        }
+
+        public BasketSummaryViewModel GetBasketSammary(HttpContextBase httpContext)
+        {
+            Basket basket = GetBasket(httpContext, false);
+            BasketSummaryViewModel model = new BasketSummaryViewModel(0, 0);
+
+            if (basket != null)
+            {
+                int? itemCount = (from item in basket.BasketItems
+                                  select item.Quanity).Sum();
+
+                decimal? basketTotal = (from b in basket.BasketItems
+                                        join p in productContext.Collection() on b.ProductId equals p.Id
+                                        select b.Quanity * p.Price).Sum();
+
+                model.BasketCount = itemCount ?? 0;
+                model.BasketTotal = basketTotal ?? decimal.Zero;
+
+                return model;
+            }
+            else
+            {
+                return model;
+            }
+        }
     }
        
    
