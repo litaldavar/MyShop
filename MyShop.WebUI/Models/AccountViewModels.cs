@@ -81,7 +81,7 @@ namespace MyShop.WebUI.Models
         public string ConfirmPassword { get; set; }
 
         [Required]
-        public string FirstNae { get; set; }
+        public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }
         [Required]
