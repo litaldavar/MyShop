@@ -31,9 +31,9 @@ namespace MyShop.Services
                     Quanity = basketItem.Quanity
                 });
 
-                orderContext.Insert(baseOrder);
-                orderContext.Commit();
-            }
+             }
+            orderContext.Insert(baseOrder);
+            orderContext.Commit();
         }
 
         public List<Order> GetOrderList()
